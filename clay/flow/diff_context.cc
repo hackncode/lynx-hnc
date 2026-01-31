@@ -269,8 +269,8 @@ void DiffContext::Statistics::LogStatistics() {
 #if ENABLE_TRACE_PERFETTO
   auto trace_func = [&](const char* name, size_t count) {
     char buf[128] = {0};
-    std::sprintf(buf, "DiffContext.%s_%" PRIxPTR, name,
-                 reinterpret_cast<uintptr_t>(this));
+    std::snprintf(buf, sizeof(buf), "DiffContext.%s_%" PRIxPTR, name,
+                  reinterpret_cast<uintptr_t>(this));
     TRACE_COUNTER("clay", lynx::perfetto::CounterTrack(buf), count);
   };
   trace_func("NewPictures", new_pictures_);
