@@ -245,9 +245,12 @@ void MetaFactory::GetCSSMeta(rapidjson::Value& document,
          ++itr) {
       const auto& name = std::string(itr->name.GetString());
       if (name.find(TEMPLATE_BUNDLE_TTSS) != std::string::npos) {
-        char* c = strcpy(new char[name.length() + 1], name.c_str());
         encoder_options.generator_options_.css_obj_.AddMember(
-            rapidjson::StringRef(c), itr->value,
+            rapidjson::Value(
+                name.c_str(),
+                encoder_options.generator_options_.source_content_obj_
+                    .GetAllocator()),
+            itr->value,
             encoder_options.generator_options_.source_content_obj_
                 .GetAllocator());
       }
