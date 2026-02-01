@@ -8,6 +8,7 @@
 #include <time.h>
 
 #include <cmath>
+#include <random>
 #include <utility>
 
 namespace lynx {
@@ -120,13 +121,16 @@ RestrictedValue Pow(VMContext* context) {
   return RestrictedValue(pow(arg1->Number(), arg2->Number()));
 }
 RestrictedValue Random(VMContext* context) {
-  static bool seeded = false;
-  if (!seeded) {
-    seeded = true;
-    srand(static_cast<unsigned int>(time(NULL)));
-  }
-  return RestrictedValue(static_cast<float>(rand()) /
-                         static_cast<float>(RAND_MAX));
+  static thread_local std::mt19937 generator = [] {
+    std::random_device rd;
+    try {
+      return std::mt19937(rd());
+    } catch (...) {
+      return std::mt19937(static_cast<unsigned int>(time(nullptr)));
+    }
+  }();
+  std::uniform_real_distribution<float> distribution(0.0f, 1.0f);
+  return RestrictedValue(distribution(generator));
 }
 
 RestrictedValue Round(VMContext* context) {
