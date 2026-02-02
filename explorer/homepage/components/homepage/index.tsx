@@ -46,10 +46,19 @@ export default function HomePage(props: HomePageProps) {
     NativeModules.ExplorerModule.openScan();
   };
 
+  const isValidUrl = (url: string) => {
+    return /^(https?|lynx|file):\/\//i.test(url);
+  };
+
   const openSchema = () => {
     'background only';
     if (inputValue && inputValue.length > 0) {
-      NativeModules.ExplorerModule.openSchema(inputValue);
+      if (isValidUrl(inputValue)) {
+        NativeModules.ExplorerModule.openSchema(inputValue);
+      } else {
+        // Sentinel: Prevent opening potentially unsafe schemes
+        console.warn('Invalid URL scheme. Only http, https, lynx, and file are allowed.');
+      }
     }
   };
 
