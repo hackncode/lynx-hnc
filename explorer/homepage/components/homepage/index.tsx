@@ -46,10 +46,29 @@ export default function HomePage(props: HomePageProps) {
     NativeModules.ExplorerModule.openScan();
   };
 
+  const isValidSchema = (url: string): boolean => {
+    if (!url || typeof url !== 'string') return false;
+    const trimmed = url.trim();
+    if (trimmed.length === 0) return false;
+
+    // Check for javascript scheme (case insensitive)
+    if (/^javascript:/i.test(trimmed)) return false;
+
+    // Must have a scheme
+    // simple regex for scheme at start
+    return /^[a-zA-Z][a-zA-Z\d+\-.]*:/.test(trimmed);
+  };
+
   const openSchema = () => {
     'background only';
     if (inputValue && inputValue.length > 0) {
-      NativeModules.ExplorerModule.openSchema(inputValue);
+      // Validate schema to prevent opening malicious schemes like javascript:
+      // and ensure it looks like a URL.
+      if (isValidSchema(inputValue)) {
+        NativeModules.ExplorerModule.openSchema(inputValue);
+      } else {
+        console.warn('Invalid schema or URL blocked for security reasons');
+      }
     }
   };
 
@@ -136,6 +155,7 @@ export default function HomePage(props: HomePageProps) {
           bindinput={handleInput}
           placeholder="Enter Card URL"
           text-color={getTextColor()}
+          maxlength={2048}
         />
         <view
           className={withTheme('connect-button')}

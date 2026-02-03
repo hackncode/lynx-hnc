@@ -66,6 +66,11 @@ export interface InputProps extends StandardProps {
    * Text color of the input
    */
   'text-color'?: string;
+
+  /**
+   * Max length of the input
+   */
+  maxlength?: number;
 }
 
 export type InputEvent = BaseEvent<'input', { value: string }>;
