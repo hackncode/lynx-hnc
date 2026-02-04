@@ -49,6 +49,11 @@ export default function HomePage(props: HomePageProps) {
   const openSchema = () => {
     'background only';
     if (inputValue && inputValue.length > 0) {
+      // 🛡️ Sentinel: Prevent usage of dangerous schemes to avoid XSS or other exploits
+      if (/^(javascript|vbscript|data):/i.test(inputValue)) {
+        console.error('Security: Blocked potentially unsafe URL scheme.');
+        return;
+      }
       NativeModules.ExplorerModule.openSchema(inputValue);
     }
   };
