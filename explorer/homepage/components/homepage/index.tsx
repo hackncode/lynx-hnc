@@ -13,6 +13,7 @@ import ScanIconDark from '@assets/images/scan-dark.png?inline';
 import ScanIcon from '@assets/images/scan.png?inline';
 import ShowcaseIcon from '@assets/images/showcase.png?inline';
 import type { InputEvent } from '../../typing';
+import { isValidUrl } from '../../utils/url_utils';
 
 interface HomePageProps {
   showPage: boolean;
@@ -49,6 +50,12 @@ export default function HomePage(props: HomePageProps) {
   const openSchema = () => {
     'background only';
     if (inputValue && inputValue.length > 0) {
+      if (!isValidUrl(inputValue)) {
+        console.error(
+          `Invalid URL scheme. Only http, https, lynx, and file are allowed.`
+        );
+        return;
+      }
       NativeModules.ExplorerModule.openSchema(inputValue);
     }
   };
