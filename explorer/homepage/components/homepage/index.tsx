@@ -23,6 +23,7 @@ interface HomePageProps {
 
 export default function HomePage(props: HomePageProps) {
   const [inputValue, setInputValue] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
 
   const icons = {
     Scan: {
@@ -46,10 +47,21 @@ export default function HomePage(props: HomePageProps) {
     NativeModules.ExplorerModule.openScan();
   };
 
+  const isValidUrl = (url: string) => {
+    return /^(http|https|assets|file):\/\//i.test(url);
+  };
+
   const openSchema = () => {
     'background only';
     if (inputValue && inputValue.length > 0) {
-      NativeModules.ExplorerModule.openSchema(inputValue);
+      if (isValidUrl(inputValue)) {
+        setErrorMessage('');
+        NativeModules.ExplorerModule.openSchema(inputValue);
+      } else {
+        setErrorMessage(
+          'Invalid URL scheme. Allowed: http, https, assets, file.'
+        );
+      }
     }
   };
 
@@ -73,6 +85,9 @@ export default function HomePage(props: HomePageProps) {
     'background only';
     const currentValue = event.detail.value.trim();
     setInputValue(currentValue);
+    if (errorMessage) {
+      setErrorMessage('');
+    }
   };
 
   const getIcon = (name: keyof typeof icons) => {
@@ -137,6 +152,9 @@ export default function HomePage(props: HomePageProps) {
           placeholder="Enter Card URL"
           text-color={getTextColor()}
         />
+        {errorMessage ? (
+          <text className="error-text">{errorMessage}</text>
+        ) : null}
         <view
           className={withTheme('connect-button')}
           bindtap={openSchema}
