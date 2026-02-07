@@ -23,6 +23,7 @@ interface HomePageProps {
 
 export default function HomePage(props: HomePageProps) {
   const [inputValue, setInputValue] = useState('');
+  const [error, setError] = useState('');
 
   const icons = {
     Scan: {
@@ -46,10 +47,26 @@ export default function HomePage(props: HomePageProps) {
     NativeModules.ExplorerModule.openScan();
   };
 
+  const isValidUrl = (url: string) => {
+    return (
+      url.startsWith('http://') ||
+      url.startsWith('https://') ||
+      url.startsWith('file://') ||
+      url.startsWith('lynx://') ||
+      url.startsWith('assets://')
+    );
+  };
+
   const openSchema = () => {
     'background only';
     if (inputValue && inputValue.length > 0) {
-      NativeModules.ExplorerModule.openSchema(inputValue);
+      if (isValidUrl(inputValue)) {
+        NativeModules.ExplorerModule.openSchema(inputValue);
+      } else {
+        setError(
+          'Invalid URL scheme. Supported: http, https, file, lynx, assets'
+        );
+      }
     }
   };
 
@@ -73,6 +90,9 @@ export default function HomePage(props: HomePageProps) {
     'background only';
     const currentValue = event.detail.value.trim();
     setInputValue(currentValue);
+    if (error) {
+      setError('');
+    }
   };
 
   const getIcon = (name: keyof typeof icons) => {
@@ -137,6 +157,18 @@ export default function HomePage(props: HomePageProps) {
           placeholder="Enter Card URL"
           text-color={getTextColor()}
         />
+        {error ? (
+          <text
+            style={{
+              color: '#ff0000',
+              fontSize: '12px',
+              marginLeft: '5%',
+              marginBottom: '2%',
+            }}
+          >
+            {error}
+          </text>
+        ) : null}
         <view
           className={withTheme('connect-button')}
           bindtap={openSchema}
