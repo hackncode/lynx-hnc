@@ -84,6 +84,39 @@ export class AppServiceSdkKnownError extends Error {
 }
 
 export function guid(): string {
+  try {
+    const globalCrypto =
+      (typeof crypto !== 'undefined' ? crypto : undefined) ||
+      (typeof window !== 'undefined' ? (window as any).crypto : undefined) ||
+      (typeof self !== 'undefined' ? (self as any).crypto : undefined) ||
+      (typeof globalThis !== 'undefined'
+        ? (globalThis as any).crypto
+        : undefined);
+
+    if (globalCrypto && globalCrypto.getRandomValues) {
+      const array = new Uint8Array(16);
+      globalCrypto.getRandomValues(array);
+
+      // Set version (4) and variant (RFC4122)
+      // version 4: 0100xxxx (4)
+      array[6] = (array[6] & 0x0f) | 0x40;
+      // variant 1: 10xxxxxx (8, 9, a, b)
+      array[8] = (array[8] & 0x3f) | 0x80;
+
+      const hexArr = [];
+      for (let i = 0; i < array.length; i++) {
+        hexArr.push(('0' + array[i].toString(16)).slice(-2));
+      }
+      const hex = hexArr.join('');
+      return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(
+        12,
+        16
+      )}-${hex.slice(16, 20)}-${hex.slice(20)}`;
+    }
+  } catch (e) {
+    // Ignore error and fallback to Math.random
+  }
+
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (char) => {
     const rand = (16 * Math.random()) | 0;
     return (char === 'x' ? rand : (3 & rand) | 8).toString(16);
