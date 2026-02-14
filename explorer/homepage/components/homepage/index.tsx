@@ -49,6 +49,10 @@ export default function HomePage(props: HomePageProps) {
   const openSchema = () => {
     'background only';
     if (inputValue && inputValue.length > 0) {
+      if (!/^(http|https|file|assets|lynx):/i.test(inputValue)) {
+        console.error('Invalid URL scheme');
+        return;
+      }
       NativeModules.ExplorerModule.openSchema(inputValue);
     }
   };
