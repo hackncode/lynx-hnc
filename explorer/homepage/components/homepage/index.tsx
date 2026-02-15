@@ -49,6 +49,18 @@ export default function HomePage(props: HomePageProps) {
   const openSchema = () => {
     'background only';
     if (inputValue && inputValue.length > 0) {
+      // Sentinel 🛡️: Validate URL scheme to prevent execution of malicious schemes like javascript:
+      const allowedSchemes = ['http:', 'https:', 'lynx:', 'file:', 'assets:'];
+      const lower = inputValue.trim().toLowerCase();
+      const isAllowed = allowedSchemes.some((scheme) =>
+        lower.startsWith(scheme)
+      );
+
+      if (!isAllowed) {
+        console.error('Sentinel: Blocked potentially unsafe URL scheme.');
+        return;
+      }
+
       NativeModules.ExplorerModule.openSchema(inputValue);
     }
   };
