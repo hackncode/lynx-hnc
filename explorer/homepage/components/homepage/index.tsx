@@ -14,6 +14,16 @@ import ScanIcon from '@assets/images/scan.png?inline';
 import ShowcaseIcon from '@assets/images/showcase.png?inline';
 import type { InputEvent } from '../../typing';
 
+function isValidSchema(url: string): boolean {
+  const allowedSchemes = ['http', 'https', 'file', 'lynx', 'assets'];
+  const schemeMatch = url.match(/^([a-z][a-z0-9+.-]*):/i);
+  if (!schemeMatch) {
+    return false;
+  }
+  const scheme = schemeMatch[1].toLowerCase();
+  return allowedSchemes.includes(scheme);
+}
+
 interface HomePageProps {
   showPage: boolean;
   currentTheme: string;
@@ -49,7 +59,9 @@ export default function HomePage(props: HomePageProps) {
   const openSchema = () => {
     'background only';
     if (inputValue && inputValue.length > 0) {
-      NativeModules.ExplorerModule.openSchema(inputValue);
+      if (isValidSchema(inputValue)) {
+        NativeModules.ExplorerModule.openSchema(inputValue);
+      }
     }
   };
 
