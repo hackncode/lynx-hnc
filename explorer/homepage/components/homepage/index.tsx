@@ -49,7 +49,16 @@ export default function HomePage(props: HomePageProps) {
   const openSchema = () => {
     'background only';
     if (inputValue && inputValue.length > 0) {
-      NativeModules.ExplorerModule.openSchema(inputValue);
+      // Sentinel: Validate URL scheme to prevent security vulnerabilities
+      const scheme = inputValue.split(':')[0]?.toLowerCase();
+      const allowedSchemes = ['http', 'https', 'file', 'lynx', 'assets'];
+      if (scheme && allowedSchemes.includes(scheme)) {
+        NativeModules.ExplorerModule.openSchema(inputValue);
+      } else {
+        console.error(
+          `[Sentinel] Blocked invalid scheme: ${scheme}. Allowed: ${allowedSchemes.join(', ')}`
+        );
+      }
     }
   };
 
