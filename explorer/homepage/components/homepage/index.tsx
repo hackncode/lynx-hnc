@@ -49,7 +49,14 @@ export default function HomePage(props: HomePageProps) {
   const openSchema = () => {
     'background only';
     if (inputValue && inputValue.length > 0) {
-      NativeModules.ExplorerModule.openSchema(inputValue);
+      // Security: Validate schema against allowlist
+      const match = inputValue.match(/^([a-zA-Z][a-zA-Z0-9+.-]*):/);
+      const scheme = match ? match[1].toLowerCase() : '';
+      if (['http', 'https', 'file', 'lynx', 'assets'].includes(scheme)) {
+        NativeModules.ExplorerModule.openSchema(inputValue);
+      } else {
+        console.error(`Blocked invalid scheme: ${scheme}`);
+      }
     }
   };
 

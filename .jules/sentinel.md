@@ -1,0 +1,4 @@
+## 2026-02-19 - [Native Bridge] Unvalidated Schema Execution in Explorer
+**Vulnerability:** The `openSchema` function in `explorer/homepage` accepted arbitrary user input and passed it directly to `NativeModules.ExplorerModule.openSchema`, allowing potential execution of dangerous URI schemes (e.g., `javascript:`, `malicious:`).
+**Learning:** React/Lynx apps often rely on native bridges that trust JS input implicitly. Developers assume "Explorer" apps are developer-only tools, but unvalidated inputs can be a vector for exploitation if users are tricked into opening malicious links.
+**Prevention:** Always validate inputs to native bridge methods against an explicit allowlist of safe schemes (e.g., `http`, `https`, `file`, `lynx`, `assets`). Use strict regex parsing (RFC 3986) to extract the scheme.
