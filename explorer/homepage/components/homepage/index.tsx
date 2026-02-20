@@ -46,10 +46,25 @@ export default function HomePage(props: HomePageProps) {
     NativeModules.ExplorerModule.openScan();
   };
 
+  const isSafeUrl = (url: string) => {
+    try {
+      const match = url.match(/^([a-zA-Z][a-zA-Z0-9+.-]*):/);
+      if (!match) return false;
+      const scheme = match[1].toLowerCase();
+      return ['http', 'https', 'file', 'lynx', 'assets'].includes(scheme);
+    } catch {
+      return false;
+    }
+  };
+
   const openSchema = () => {
     'background only';
     if (inputValue && inputValue.length > 0) {
-      NativeModules.ExplorerModule.openSchema(inputValue);
+      if (isSafeUrl(inputValue)) {
+        NativeModules.ExplorerModule.openSchema(inputValue);
+      } else {
+        console.error('Invalid URL scheme');
+      }
     }
   };
 
