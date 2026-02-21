@@ -14,6 +14,17 @@ import ScanIcon from '@assets/images/scan.png?inline';
 import ShowcaseIcon from '@assets/images/showcase.png?inline';
 import type { InputEvent } from '../../typing';
 
+const validateSchema = (url: string) => {
+  const allowedSchemes = ['http', 'https', 'lynx', 'file', 'assets'];
+  const regex = /^([a-zA-Z][a-zA-Z0-9+.-]*):/;
+  const match = url.match(regex);
+  if (match) {
+    const scheme = match[1].toLowerCase();
+    return allowedSchemes.includes(scheme);
+  }
+  return false;
+};
+
 interface HomePageProps {
   showPage: boolean;
   currentTheme: string;
@@ -49,7 +60,13 @@ export default function HomePage(props: HomePageProps) {
   const openSchema = () => {
     'background only';
     if (inputValue && inputValue.length > 0) {
-      NativeModules.ExplorerModule.openSchema(inputValue);
+      if (validateSchema(inputValue)) {
+        NativeModules.ExplorerModule.openSchema(inputValue);
+      } else {
+        console.error(
+          `Invalid schema in URL: ${inputValue}. Allowed schemes: http, https, lynx, file, assets.`
+        );
+      }
     }
   };
 
