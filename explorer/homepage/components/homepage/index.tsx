@@ -49,7 +49,22 @@ export default function HomePage(props: HomePageProps) {
   const openSchema = () => {
     'background only';
     if (inputValue && inputValue.length > 0) {
-      NativeModules.ExplorerModule.openSchema(inputValue);
+      // Security check: validate schema
+      const validSchemes = [
+        'http:',
+        'https:',
+        'file:',
+        'lynx:',
+        'assets:',
+        'lynx_assets:',
+      ];
+      const match = inputValue.match(/^([a-zA-Z][a-zA-Z0-9+.-_]*):/);
+      const scheme = match ? match[1].toLowerCase() + ':' : '';
+      if (validSchemes.includes(scheme)) {
+        NativeModules.ExplorerModule.openSchema(inputValue);
+      } else {
+        console.error('Invalid schema or URL format');
+      }
     }
   };
 
