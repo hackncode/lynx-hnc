@@ -84,6 +84,45 @@ export class AppServiceSdkKnownError extends Error {
 }
 
 export function guid(): string {
+  const cryptoObj =
+    typeof crypto !== 'undefined'
+      ? crypto
+      : typeof window !== 'undefined' && window.crypto
+      ? window.crypto
+      : typeof self !== 'undefined' && self.crypto
+      ? self.crypto
+      : undefined;
+
+  if (cryptoObj && typeof (cryptoObj as any).getRandomValues === 'function') {
+    const rnds = new Uint8Array(16);
+    (cryptoObj as any).getRandomValues(rnds);
+
+    // Per 4.4, set bits for version and `clock_seq_hi_and_reserved`
+    rnds[6] = (rnds[6] & 0x0f) | 0x40;
+    rnds[8] = (rnds[8] & 0x3f) | 0x80;
+
+    // Convert to hex
+    const hex: string[] = [];
+    for (let i = 0; i < 16; i++) {
+      let s = rnds[i].toString(16);
+      if (s.length === 1) {
+        s = '0' + s;
+      }
+      hex.push(s);
+    }
+    return (
+      hex.slice(0, 4).join('') +
+      '-' +
+      hex.slice(4, 6).join('') +
+      '-' +
+      hex.slice(6, 8).join('') +
+      '-' +
+      hex.slice(8, 10).join('') +
+      '-' +
+      hex.slice(10).join('')
+    );
+  }
+
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (char) => {
     const rand = (16 * Math.random()) | 0;
     return (char === 'x' ? rand : (3 & rand) | 8).toString(16);
