@@ -49,6 +49,25 @@ export default function HomePage(props: HomePageProps) {
   const openSchema = () => {
     'background only';
     if (inputValue && inputValue.length > 0) {
+      const allowedSchemes = [
+        'http:',
+        'https:',
+        'file:',
+        'lynx:',
+        'assets:',
+        'lynx_assets:',
+      ];
+      // Basic validation to prevent dangerous schemes like javascript:
+      const isValid = allowedSchemes.some((scheme) =>
+        inputValue.toLowerCase().startsWith(scheme)
+      );
+
+      if (!isValid) {
+        console.warn(
+          `[Sentinel] Blocked potentially unsafe URL scheme: ${inputValue}`
+        );
+        return;
+      }
       NativeModules.ExplorerModule.openSchema(inputValue);
     }
   };
