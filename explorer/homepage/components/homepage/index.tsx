@@ -14,6 +14,15 @@ import ScanIcon from '@assets/images/scan.png?inline';
 import ShowcaseIcon from '@assets/images/showcase.png?inline';
 import type { InputEvent } from '../../typing';
 
+const ALLOWED_SCHEMES = [
+  'http:',
+  'https:',
+  'file:',
+  'lynx:',
+  'assets:',
+  'lynx_assets:',
+];
+
 interface HomePageProps {
   showPage: boolean;
   currentTheme: string;
@@ -49,7 +58,10 @@ export default function HomePage(props: HomePageProps) {
   const openSchema = () => {
     'background only';
     if (inputValue && inputValue.length > 0) {
-      NativeModules.ExplorerModule.openSchema(inputValue);
+      const lowerUrl = inputValue.toLowerCase();
+      if (ALLOWED_SCHEMES.some((scheme) => lowerUrl.startsWith(scheme))) {
+        NativeModules.ExplorerModule.openSchema(inputValue);
+      }
     }
   };
 
