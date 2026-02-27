@@ -84,6 +84,35 @@ export class AppServiceSdkKnownError extends Error {
 }
 
 export function guid(): string {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return crypto.randomUUID();
+  }
+
+  // Fallback for environments where crypto.randomUUID is not available
+  // e.g. older browsers or environments where crypto is not fully supported
+  // We use crypto.getRandomValues if available for better randomness
+  let getRandomValues: ((array: Uint8Array) => Uint8Array) | undefined;
+  if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
+    getRandomValues = crypto.getRandomValues.bind(crypto);
+  }
+
+  if (getRandomValues) {
+    const rnds = new Uint8Array(16);
+    getRandomValues(rnds);
+    // Set version (4) and variant (8, 9, a, b) bits
+    rnds[6] = (rnds[6] & 0x0f) | 0x40;
+    rnds[8] = (rnds[8] & 0x3f) | 0x80;
+
+    // Convert to hex string
+    let i = 0;
+    const next = () => {
+      const b = rnds[i++].toString(16);
+      return b.length === 1 ? '0' + b : b;
+    };
+    return `${next()}${next()}${next()}${next()}-${next()}${next()}-${next()}${next()}-${next()}${next()}-${next()}${next()}${next()}${next()}${next()}${next()}`;
+  }
+
+  // Fallback to Math.random() if crypto is not available
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (char) => {
     const rand = (16 * Math.random()) | 0;
     return (char === 'x' ? rand : (3 & rand) | 8).toString(16);
