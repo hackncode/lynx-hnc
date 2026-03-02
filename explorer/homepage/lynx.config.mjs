@@ -2,16 +2,16 @@
 // Licensed under the Apache License Version 2.0 that can be found in the
 // LICENSE file in the root directory of this source tree.
 
-import { defineConfig } from "@lynx-js/rspeedy";
-import { pluginReactLynx } from "@lynx-js/react-rsbuild-plugin";
-import { pluginQRCode } from "@lynx-js/qrcode-rsbuild-plugin";
-import { pluginSass } from "@rsbuild/plugin-sass";
+import { defineConfig } from '@lynx-js/rspeedy';
+import { pluginReactLynx } from '@lynx-js/react-rsbuild-plugin';
+import { pluginQRCode } from '@lynx-js/qrcode-rsbuild-plugin';
+import { pluginSass } from '@rsbuild/plugin-sass';
 export default defineConfig({
   source: {
-    entry: "./index.tsx",
+    entry: './index.tsx',
     alias: {
-      "@components": "./components",
-      "@assets": "./assets",
+      '@components': './components',
+      '@assets': './assets',
     },
   },
   plugins: [pluginReactLynx(), pluginSass({}), pluginQRCode()],
