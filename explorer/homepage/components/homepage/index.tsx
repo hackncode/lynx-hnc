@@ -49,6 +49,28 @@ export default function HomePage(props: HomePageProps) {
   const openSchema = () => {
     'background only';
     if (inputValue && inputValue.length > 0) {
+      // Security: Validate user-provided URL scheme against an allowlist
+      // to prevent executing arbitrary schemes or native code.
+      const allowedSchemes = [
+        'http://',
+        'https://',
+        'file://',
+        'lynx://',
+        'assets://',
+        'lynx_assets://',
+      ];
+      const inputLower = inputValue.toLowerCase();
+      const isAllowed = allowedSchemes.some((scheme) =>
+        inputLower.startsWith(scheme)
+      );
+
+      if (!isAllowed) {
+        console.error(
+          'Security Warning: Blocked attempt to open an unauthorized URL scheme.'
+        );
+        return;
+      }
+
       NativeModules.ExplorerModule.openSchema(inputValue);
     }
   };

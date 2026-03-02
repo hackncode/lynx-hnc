@@ -2,7 +2,7 @@
 // Licensed under the Apache License Version 2.0 that can be found in the
 // LICENSE file in the root directory of this source tree.
 
-@import "../shared";
+@import '../shared';
 
 .logo {
   display: flex;
@@ -13,7 +13,7 @@
 .home-title__dark {
   @include title;
   margin-left: 6px;
-  color: var(--title-dark)
+  color: var(--title-dark);
 }
 
 .home-title__light {
@@ -74,7 +74,7 @@
   font-weight: 500;
   height: 20%;
   margin: 5%;
-  color: var(--text-dark)
+  color: var(--text-dark);
 }
 
 @mixin connect-button {
