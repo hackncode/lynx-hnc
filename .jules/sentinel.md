@@ -1,0 +1,4 @@
+## 2024-05-24 - Missing URL Scheme Validation in Explorer
+**Vulnerability:** The `openSchema` function in the Lynx Explorer homepage passed user-provided URLs directly to the native `ExplorerModule` without any validation. This allowed arbitrary URL schemes to be executed by the native module, potentially leading to unauthorized actions or code execution.
+**Learning:** Native module bridges are critical security boundaries. Any input passed from the JS runtime to native modules must be strictly validated against an allowlist, especially for sensitive operations like opening URLs or executing schemas.
+**Prevention:** Always enforce strict allowlists for URL schemes (`http://`, `https://`, `file://`, `lynx://`, `assets://`, `lynx_assets://`) before passing them to native methods like `openSchema`. Use `startsWith` on the lowercased input to perform the check.
