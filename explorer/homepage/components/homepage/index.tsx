@@ -49,7 +49,27 @@ export default function HomePage(props: HomePageProps) {
   const openSchema = () => {
     'background only';
     if (inputValue && inputValue.length > 0) {
-      NativeModules.ExplorerModule.openSchema(inputValue);
+      // Security: Validate allowed schemas to prevent unauthorized execution
+      const allowedSchemas = [
+        'http:',
+        'https:',
+        'file:',
+        'lynx:',
+        'assets:',
+        'lynx_assets:',
+      ];
+      const urlLower = inputValue.toLowerCase();
+      const isAllowed = allowedSchemas.some((schema) =>
+        urlLower.startsWith(schema)
+      );
+
+      if (isAllowed) {
+        NativeModules.ExplorerModule.openSchema(inputValue);
+      } else {
+        console.error(
+          'Security Warning: Blocked unauthorized schema execution attempt.'
+        );
+      }
     }
   };
 
