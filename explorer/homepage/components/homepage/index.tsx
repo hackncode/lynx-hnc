@@ -49,7 +49,26 @@ export default function HomePage(props: HomePageProps) {
   const openSchema = () => {
     'background only';
     if (inputValue && inputValue.length > 0) {
-      NativeModules.ExplorerModule.openSchema(inputValue);
+      // Security enhancement: Restrict allowed schemes to prevent executing arbitrary schemes
+      const lowerUrl = inputValue.toLowerCase();
+      const allowedSchemes = [
+        'http:',
+        'https:',
+        'file:',
+        'lynx:',
+        'assets:',
+        'lynx_assets:',
+      ];
+
+      const isAllowed = allowedSchemes.some((scheme) =>
+        lowerUrl.startsWith(scheme)
+      );
+
+      if (isAllowed) {
+        NativeModules.ExplorerModule.openSchema(inputValue);
+      } else {
+        console.error('Blocked attempt to open unauthorized schema');
+      }
     }
   };
 
