@@ -1,0 +1,4 @@
+## 2024-05-24 - Unsafe URL Scheme Opening in Native Modules
+**Vulnerability:** The `openSchema` function in `explorer/homepage` accepted arbitrary URL schemas without validation, allowing a potential attacker to execute arbitrary unhandled schemas (like `javascript:`, `tel:`, etc.) via the native module handler, potentially leading to unauthorized operations or data access on the device.
+**Learning:** Functions bridging web/frontend inputs to native handlers must restrict allowed operations using strict allowlists, as native modules usually execute contexts with broader privileges.
+**Prevention:** Implement strict input validation using allowlists for any URL schemas or protocol handlers before passing them to native components (e.g. `NativeModules.ExplorerModule.openSchema`).
