@@ -49,7 +49,18 @@ export default function HomePage(props: HomePageProps) {
   const openSchema = () => {
     'background only';
     if (inputValue && inputValue.length > 0) {
-      NativeModules.ExplorerModule.openSchema(inputValue);
+      const lowerInput = inputValue.toLowerCase();
+      const isAllowed =
+        lowerInput.startsWith('http:') ||
+        lowerInput.startsWith('https:') ||
+        lowerInput.startsWith('file:') ||
+        lowerInput.startsWith('lynx:') ||
+        lowerInput.startsWith('assets:') ||
+        lowerInput.startsWith('lynx_assets:');
+
+      if (isAllowed) {
+        NativeModules.ExplorerModule.openSchema(inputValue);
+      }
     }
   };
 
