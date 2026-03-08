@@ -49,7 +49,23 @@ export default function HomePage(props: HomePageProps) {
   const openSchema = () => {
     'background only';
     if (inputValue && inputValue.length > 0) {
-      NativeModules.ExplorerModule.openSchema(inputValue);
+      const url = inputValue.toLowerCase();
+      const allowedSchemes = [
+        'http:',
+        'https:',
+        'file:',
+        'lynx:',
+        'assets:',
+        'lynx_assets:',
+      ];
+      if (allowedSchemes.some((scheme) => url.startsWith(scheme))) {
+        NativeModules.ExplorerModule.openSchema(inputValue);
+      } else {
+        console.error(
+          'Blocked attempt to open schema with unapproved prefix:',
+          inputValue
+        );
+      }
     }
   };
 
