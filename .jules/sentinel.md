@@ -1,0 +1,4 @@
+## 2024-03-09 - Insecure Randomness in UUID Generator
+**Vulnerability:** The `guid()` utility function in `@lynx-js/runtime-shared` was using `Math.random()` to generate UUID v4 strings. `Math.random()` is not cryptographically secure and the generated values could be predictable, making them unsuitable for any security-sensitive use cases.
+**Learning:** Utilities shared across a runtime often have varying constraints on runtime environments, requiring careful defensive checks before relying on newer APIs like `crypto.randomUUID()`.
+**Prevention:** Always use cryptographically secure random number generators (CSPRNG) like `crypto.randomUUID()` or `crypto.getRandomValues()` when generating UUIDs or random identifiers. Implement feature detection and fallback chains if running in older or non-standard environments.
