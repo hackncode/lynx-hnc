@@ -84,6 +84,41 @@ export class AppServiceSdkKnownError extends Error {
 }
 
 export function guid(): string {
+  const cryptoObj =
+    typeof crypto !== 'undefined'
+      ? crypto
+      : typeof window !== 'undefined'
+      ? window.crypto
+      : typeof self !== 'undefined'
+      ? self.crypto
+      : typeof globalThis !== 'undefined'
+      ? (globalThis as any).crypto
+      : null;
+
+  if (cryptoObj) {
+    if (typeof cryptoObj.randomUUID === 'function') {
+      return cryptoObj.randomUUID();
+    }
+    if (
+      typeof cryptoObj.getRandomValues === 'function' &&
+      typeof Uint8Array !== 'undefined'
+    ) {
+      const arr = new Uint8Array(16);
+      cryptoObj.getRandomValues(arr);
+      arr[6] = (arr[6] & 0x0f) | 0x40;
+      arr[8] = (arr[8] & 0x3f) | 0x80;
+      let uuid = '';
+      for (let i = 0; i < 16; i++) {
+        const hex = arr[i].toString(16);
+        uuid += hex.length === 1 ? '0' + hex : hex;
+        if (i === 3 || i === 5 || i === 7 || i === 9) {
+          uuid += '-';
+        }
+      }
+      return uuid;
+    }
+  }
+
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (char) => {
     const rand = (16 * Math.random()) | 0;
     return (char === 'x' ? rand : (3 & rand) | 8).toString(16);
