@@ -1,0 +1,4 @@
+## 2024-05-24 - Fix weak random number generation for UUIDs
+**Vulnerability:** The `guid()` function in `js_libraries/lynx-runtime-shared/src/utils.ts` relied entirely on `Math.random()`, generating predictable UUIDs.
+**Learning:** In contexts lacking native APIs, it's easy to fall back to `Math.random()`. However, `Math.random()` is not cryptographically secure, and when these UUIDs are used for sensitive operations (like identifying users, session tracking, etc.), predictability can lead to security vulnerabilities.
+**Prevention:** Always attempt to use cryptographically secure RNGs (`crypto.randomUUID()` or `crypto.getRandomValues()`) from the global context first before falling back to `Math.random()`. In shared runtimes, access standard APIs securely via a native global object.

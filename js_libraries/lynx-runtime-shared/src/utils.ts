@@ -2,6 +2,8 @@
 // Licensed under the Apache License Version 2.0 that can be found in the
 // LICENSE file in the root directory of this source tree.
 
+import nativeGlobal from './nativeGlobal';
+
 export function hasProperty(object, property): boolean {
   // return Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(object), property)
   return Object.prototype.hasOwnProperty.call(object || {}, property);
@@ -84,6 +86,22 @@ export class AppServiceSdkKnownError extends Error {
 }
 
 export function guid(): string {
+  const crypto = nativeGlobal.crypto;
+  if (crypto && typeof crypto.randomUUID === 'function') {
+    return crypto.randomUUID();
+  }
+
+  if (crypto && typeof crypto.getRandomValues === 'function') {
+    const randomBytes = new Uint8Array(16);
+    crypto.getRandomValues(randomBytes);
+    randomBytes[6] = (randomBytes[6] & 0x0f) | 0x40; // version 4
+    randomBytes[8] = (randomBytes[8] & 0x3f) | 0x80; // variant 1
+    const hex = Array.from(randomBytes).map((b) =>
+      b.toString(16).length === 1 ? '0' + b.toString(16) : b.toString(16)
+    );
+    return `${hex.slice(0, 4).join('')}-${hex.slice(4, 6).join('')}-${hex.slice(6, 8).join('')}-${hex.slice(8, 10).join('')}-${hex.slice(10, 16).join('')}`;
+  }
+
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (char) => {
     const rand = (16 * Math.random()) | 0;
     return (char === 'x' ? rand : (3 & rand) | 8).toString(16);
