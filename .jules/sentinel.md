@@ -1,0 +1,4 @@
+## 2024-05-18 - [MEDIUM] Insecure Random Number Generation in Shared Utility
+**Vulnerability:** The `guid()` function in `@lynx-js/runtime-shared` used `Math.random()` to generate unique identifiers. `Math.random()` is not cryptographically secure and predictable, which could expose users to session/token predictability or collisions if GUIDs are used for security purposes.
+**Learning:** Shared utilities that are meant to be robust need to employ secure fallbacks for critical functions like randomness when running across varied runtimes.
+**Prevention:** Always prefer cryptographically secure random number generation (`crypto.randomUUID()` or `crypto.getRandomValues()`) over `Math.random()` for generating UUIDs, tokens, and other sensitive identifiers. Establish a secure fallback chain for compatibility without sacrificing security by default.
