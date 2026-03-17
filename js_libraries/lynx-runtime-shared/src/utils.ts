@@ -2,6 +2,8 @@
 // Licensed under the Apache License Version 2.0 that can be found in the
 // LICENSE file in the root directory of this source tree.
 
+import nativeGlobal from './nativeGlobal';
+
 export function hasProperty(object, property): boolean {
   // return Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(object), property)
   return Object.prototype.hasOwnProperty.call(object || {}, property);
@@ -84,6 +86,20 @@ export class AppServiceSdkKnownError extends Error {
 }
 
 export function guid(): string {
+  if (nativeGlobal?.crypto?.randomUUID) {
+    return nativeGlobal.crypto.randomUUID();
+  }
+
+  if (nativeGlobal?.crypto?.getRandomValues) {
+    const bytes = new Uint8Array(31);
+    nativeGlobal.crypto.getRandomValues(bytes);
+    let i = 0;
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (char) => {
+      const rand = bytes[i++] % 16;
+      return (char === 'x' ? rand : (3 & rand) | 8).toString(16);
+    });
+  }
+
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (char) => {
     const rand = (16 * Math.random()) | 0;
     return (char === 'x' ? rand : (3 & rand) | 8).toString(16);

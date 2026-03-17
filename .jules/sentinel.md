@@ -1,0 +1,5 @@
+
+## 2024-05-15 - Insecure Random Number Generation for UUIDs
+**Vulnerability:** Weak, non-cryptographically secure random number generator `Math.random()` was used for `guid()` generation, which could produce predictable UUIDs.
+**Learning:** Legacy implementations of UUID generation frequently rely on `Math.random()`. The `nativeGlobal` wrapper provided by Lynx allows access to the standard Web Crypto API across the platform which allows for standard UUID generation techniques. Additionally, when looping and allocating `Uint8Array` inside a loop, it takes too much time, so the byte array entropy should be pre-allocated once before the loop.
+**Prevention:** Always prioritize standard Web Crypto `crypto.randomUUID()` or `crypto.getRandomValues()` over `Math.random()` when generating secrets, identifiers, or UUIDs in JavaScript environments. Use `nativeGlobal` to access standard browser APIs reliably across platforms. Ensure proper allocation strategies are used if manually constructing entropy via `getRandomValues()`.
