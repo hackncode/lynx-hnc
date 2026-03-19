@@ -84,6 +84,35 @@ export class AppServiceSdkKnownError extends Error {
 }
 
 export function guid(): string {
+  // Use direct feature detection to avoid CSP eval risks
+  if (typeof crypto !== 'undefined') {
+    if (typeof crypto.randomUUID === 'function') {
+      return crypto.randomUUID();
+    }
+    if (typeof crypto.getRandomValues === 'function') {
+      // Allocate a single array of the required entropy beforehand
+      // instead of allocating small arrays per iteration to avoid performance bottlenecks
+      const bytes = new Uint8Array(16);
+      crypto.getRandomValues(bytes);
+      // set UUID version to 4
+      bytes[6] = (bytes[6] & 0x0f) | 0x40;
+      // set UUID variant to 10xx
+      bytes[8] = (bytes[8] & 0x3f) | 0x80;
+
+      let uuid = '';
+      for (let i = 0; i < 16; i++) {
+        // Use custom hex conversion avoiding padStart for ES2016 compatibility
+        const hex = bytes[i].toString(16);
+        uuid += hex.length === 1 ? '0' + hex : hex;
+        if (i === 3 || i === 5 || i === 7 || i === 9) {
+          uuid += '-';
+        }
+      }
+      return uuid;
+    }
+  }
+
+  // Fallback to Math.random
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (char) => {
     const rand = (16 * Math.random()) | 0;
     return (char === 'x' ? rand : (3 & rand) | 8).toString(16);
