@@ -1,0 +1,4 @@
+## 2024-05-24 - [Fix weak random number generation for GUIDs]
+**Vulnerability:** Weak pseudo-random number generation using `Math.random()` in `guid()` generation inside `@lynx-js/runtime-shared`. This makes generated identifiers highly predictable and susceptible to collision or guessing attacks.
+**Learning:** In a highly cross-platform environment like Lynx, global availability of cryptographic APIs (like `crypto.randomUUID()` or `crypto.getRandomValues()`) isn't guaranteed natively, prompting developers to fall back prematurely on `Math.random()`. The `nativeGlobal` wrapper attempts to evaluate `this` but can trigger eval constraints.
+**Prevention:** Always prioritize direct feature-detected `crypto` API methods over `Math.random()` for identifier generation. For performance, pre-allocate the required random bytes buffer outside of processing loops. Preserve `Math.random()` purely as a final safeguard if true entropy is unavailable.
