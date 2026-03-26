@@ -1,0 +1,4 @@
+## 2025-02-17 - Weak Random Number Generation
+**Vulnerability:** The `guid()` function in `js_libraries/lynx-runtime-shared/src/utils.ts` relied completely on `Math.random()`, which is a pseudo-random number generator not suitable for cryptographic or security token purposes as its values can be predicted.
+**Learning:** For performance reasons, when using `crypto.getRandomValues()` as a fallback for UUID generation, we need to pre-allocate a single byte array containing all the entropy rather than allocating small byte arrays repeatedly per iteration. Also, some older target environments may not support `padStart` or other ES2017+ string methods, so manual hex conversions must be used.
+**Prevention:** Always prioritize `crypto.randomUUID()` and `crypto.getRandomValues()` over `Math.random()` for identifier generation. Ensure that performance-critical loops are optimized for older environments by avoiding newer ES methods where necessary.
