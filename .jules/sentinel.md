@@ -1,0 +1,4 @@
+## 2024-03-27 - Weak Random Number Generation in UUIDs
+**Vulnerability:** The `guid()` utility used `Math.random()` to generate UUIDs, which is not cryptographically secure and predictable, posing a security risk if the UUIDs are used for sensitive IDs, tokens, or sessions.
+**Learning:** `Math.random()` should never be used where unguessability is required. Furthermore, when using `crypto.getRandomValues()` as a fallback in a loop (like `String.prototype.replace`), it's crucial to pre-allocate a single byte array representing the required entropy beforehand, rather than allocating a small byte array during every iteration, to prevent significant performance degradation.
+**Prevention:** Always use `crypto.randomUUID()` when available for generating UUIDs, with a fallback to `crypto.getRandomValues()`. Only use `Math.random()` as an absolute last resort if neither are available.
