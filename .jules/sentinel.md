@@ -1,0 +1,4 @@
+## 2026-03-31 - Secure Randomness for UUID Generation
+**Vulnerability:** The `guid` generation function in `utils.ts` was generating UUIDs utilizing `Math.random()`, exposing predictability that is unsuitable for security-sensitive contexts.
+**Learning:** `Math.random()` provides predictable pseudorandomness and relying on it for identifiers or tokens can lead to severe security weaknesses. Also, replacing it securely has performance implications; invoking `crypto.getRandomValues()` on a per-character/per-byte basis via newly instantiated arrays inside a tight loop can cause severe performance bottlenecks.
+**Prevention:** Leverage built-in `crypto.randomUUID()` when available. When providing a fallback using `crypto.getRandomValues()`, allocate a single byte array representing all the required entropy beforehand rather than iteratively creating small byte arrays. If crypto is not available, safely fallback to `Math.random()`.
