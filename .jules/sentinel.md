@@ -1,0 +1,7 @@
+## 2024-04-01 - Fix Weak Random Number Generation in `guid()`
+
+**Vulnerability:** Weak random number generation using `Math.random()` to generate UUID v4 values. `Math.random()` is not cryptographically secure, meaning its generated values can be predicted, leading to potential collisions or allowing attackers to guess UUIDs. This can cause severe security issues depending on how the UUID is used (e.g., session tokens, identifiers in authorization, CSRF tokens).
+
+**Learning:** `Math.random()` is often used by mistake for UUID generation because it is simple and readily available, while the Web Crypto API (`crypto.randomUUID()` and `crypto.getRandomValues()`) is more verbose and might be missing in very old environments. A resilient implementation should prefer the secure cryptographic APIs when available and only use `Math.random()` as a last resort. For `crypto.getRandomValues()` used within a string replace loop, allocating a single byte array representing the required entropy upfront avoids substantial performance bottlenecks that would otherwise occur if small arrays were allocated iteratively.
+
+**Prevention:** Ensure cryptographic primitives like UUIDs and security tokens are generated using the Web Crypto API (`crypto.randomUUID()` or `crypto.getRandomValues()`) rather than pseudo-random number generators like `Math.random()`. Introduce linters or static analysis rules to flag usage of `Math.random()` for operations that look like token or ID generation.
