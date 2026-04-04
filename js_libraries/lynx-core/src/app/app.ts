@@ -734,13 +734,12 @@ export abstract class BaseApp<
     let module = that.modules[entryName][path];
     if (!module) {
       try {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const tt = that;
         const jsContent = that._nativeApp.readScript(path, {
           dynamicComponentEntry: entryName,
         });
-        // eslint-disable-next-line no-eval
-        eval(jsContent);
+        // eslint-disable-next-line no-new-func
+        const fn = new Function('tt', jsContent);
+        fn(that);
         module = that.modules[entryName][path];
       } catch (e) {
         this.handleError(

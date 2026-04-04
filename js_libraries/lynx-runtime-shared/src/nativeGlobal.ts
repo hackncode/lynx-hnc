@@ -3,7 +3,13 @@
 // LICENSE file in the root directory of this source tree.
 
 // Get the global variable of the current JS runtime.
+// @ts-ignore
 const _global = (function () {
+  if (typeof globalThis !== 'undefined') return globalThis;
+  if (typeof self !== 'undefined') return self;
+  if (typeof window !== 'undefined') return window;
+  // @ts-ignore
+  if (typeof global !== 'undefined') return global;
   // eslint-disable-next-line no-eval
   return this || (0, eval)('this');
 })();
