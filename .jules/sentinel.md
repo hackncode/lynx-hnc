@@ -1,0 +1,4 @@
+## 2024-05-24 - CSP unsafe-eval in Global Resolution
+**Vulnerability:** Use of `eval('this')` and `new Function('return this')()` to resolve the global object in multiple locations (`nativeGlobal.ts`, `ttConsole.ts`, `android-polyfill.js`, `lynx-promise/src/index.js`). This triggers Content Security Policy (CSP) `unsafe-eval` violations in strict environments, potentially leading to crashes or application failure when `unsafe-eval` is disallowed.
+**Learning:** Legacy JavaScript patterns often rely on `eval` or `new Function` to reliably acquire the global context. However, modern environments and strict security policies block these executions.
+**Prevention:** Always use direct feature detection (`typeof globalThis !== 'undefined' ? globalThis : ...`) to safely resolve the global object without triggering CSP violations.
