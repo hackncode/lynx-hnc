@@ -3,8 +3,18 @@
 // LICENSE file in the root directory of this source tree.
 
 // Get the global variable of the current JS runtime.
-const _global = (function () {
-  // eslint-disable-next-line no-eval
-  return this || (0, eval)('this');
-})();
+const _global =
+  typeof globalThis !== 'undefined'
+    ? globalThis
+    : typeof self !== 'undefined'
+      ? self
+      : typeof window !== 'undefined'
+        ? window
+        : // @ts-ignore
+          typeof global !== 'undefined'
+          ? // @ts-ignore
+            global
+          : // eslint-disable-next-line @typescript-eslint/no-invalid-this
+            this;
+
 export default _global;
