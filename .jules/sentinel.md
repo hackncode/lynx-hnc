@@ -1,0 +1,4 @@
+## 2024-05-15 - Replace CSP-violating global evaluation
+**Vulnerability:** The codebase was resolving the global object by invoking the JavaScript execution functions (`eval('this')` and `new Function('return this')()`). This triggers Content Security Policy (CSP) errors in contexts where `unsafe-eval` is not permitted, which breaks applications and poses a security risk.
+**Learning:** To prevent CSP 'unsafe-eval' crashes, global object resolution across the codebase (e.g., in `nativeGlobal.ts`, `ttConsole.ts`, `android-polyfill.js`) must prioritize direct feature detection (`globalThis`, `self`, `window`, `global`, `this`) and avoid falling back to `eval('this')` or `new Function('return this')()`.
+**Prevention:** Always use safe object detection like `typeof globalThis !== 'undefined'` instead of string evaluation methods for retrieving the global object context.
