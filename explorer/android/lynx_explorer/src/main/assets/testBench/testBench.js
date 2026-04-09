@@ -57,12 +57,11 @@ static UTC(year, month, ...others){
 }
 // replace original Date obj
 var Global = (function () {
-        if (typeof global === 'object') {
-            return global;
-        }
-        else {
-            return (0, eval)('this');
-        }
+        if (typeof globalThis !== 'undefined') return globalThis;
+        if (typeof self !== 'undefined') return self;
+        if (typeof window !== 'undefined') return window;
+        if (typeof global !== 'undefined') return global;
+        return this;
     })();
 Global.Date = TestBenchDate;
 
