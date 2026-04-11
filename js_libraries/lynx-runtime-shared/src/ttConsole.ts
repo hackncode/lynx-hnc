@@ -22,7 +22,8 @@ export function createSharedConsole(runtimeId?: string): SharedConsole {
 
 const _global = (function () {
   // eslint-disable-next-line no-eval
-  return this || (0, eval)('this');
+  // @ts-ignore
+  return typeof globalThis !== 'undefined' ? globalThis : typeof self !== 'undefined' ? self : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : this;
 })();
 
 /**
