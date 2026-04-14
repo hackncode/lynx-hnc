@@ -20,10 +20,19 @@ export function createSharedConsole(runtimeId?: string): SharedConsole {
   return nativeConsole as SharedConsole;
 }
 
-const _global = (function () {
-  // eslint-disable-next-line no-eval
-  return this || (0, eval)('this');
-})();
+// @ts-ignore
+const _global =
+  typeof globalThis !== 'undefined'
+    ? globalThis
+    : typeof self !== 'undefined'
+    ? self
+    : typeof window !== 'undefined'
+    ? window
+    // @ts-ignore
+    : typeof global !== 'undefined'
+    // @ts-ignore
+    ? global
+    : this;
 
 /**
  * This is a wrapper to nativeConsole that log with groupId.
