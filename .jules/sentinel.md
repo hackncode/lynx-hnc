@@ -1,0 +1,4 @@
+## 2025-04-17 - [Fix unsafe-eval CSP violation in global resolution]
+**Vulnerability:** The codebase was using `(0, eval)('this')` and `new Function('return this')()` to resolve the global object in environments without a standardized `globalThis`. This triggers strict Content Security Policy (CSP) 'unsafe-eval' violations, which can cause the app to crash or fail securely in environments enforcing strict CSPs.
+**Learning:** Using `eval` or `new Function` to resolve `this` is a legacy pattern that is fundamentally incompatible with modern secure execution environments. Relying on it exposes the application to CSP-related failures and potential security scrutiny.
+**Prevention:** Always prioritize direct feature detection for the global object (`globalThis`, `self`, `window`, `global`) instead of falling back to dynamic string evaluation like `eval('this')`.

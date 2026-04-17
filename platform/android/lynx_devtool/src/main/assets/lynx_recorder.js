@@ -57,7 +57,7 @@ var Global = (function () {
             return global;
         }
         else {
-            return (0, eval)('this');
+            return typeof globalThis !== 'undefined' ? globalThis : typeof self !== 'undefined' ? self : typeof window !== 'undefined' ? window : this;
         }
     })();
 Global.Date = LynxRecorderDate;
