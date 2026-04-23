@@ -1,0 +1,4 @@
+## 2024-05-24 - [CSP Bypass via Legacy Global Resolution]
+**Vulnerability:** Codebase uses `new Function('return this')()` and `eval('this')` to resolve the global object, which violates Content Security Policy (CSP) `unsafe-eval` restrictions and can lead to application crashes or security vulnerabilities in environments enforcing CSP.
+**Learning:** Legacy methods for accessing the global object using `eval` or `new Function` were pervasive. These methods are 'security theater' and break local lexical scope injection if misused, while introducing real CSP evaluation risks.
+**Prevention:** Always use direct feature detection (`globalThis`, `self`, `window`, `global`, `this`) for global object resolution. Avoid falling back to dynamic code execution mechanisms like `eval` or `new Function`.
