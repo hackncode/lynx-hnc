@@ -4,7 +4,11 @@
 
 // Get the global variable of the current JS runtime.
 const _global = (function () {
-  // eslint-disable-next-line no-eval
-  return this || (0, eval)('this');
+  if (typeof globalThis !== 'undefined') return globalThis;
+  if (typeof self !== 'undefined') return self;
+  if (typeof window !== 'undefined') return window;
+  // @ts-ignore
+  if (typeof global !== 'undefined') return global;
+  return this;
 })();
 export default _global;
