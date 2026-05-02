@@ -60,8 +60,14 @@ var Global = (function () {
         if (typeof global === 'object') {
             return global;
         }
-        else {
-            return (0, eval)('this');
+        else if (typeof globalThis !== 'undefined') {
+            return globalThis;
+        } else if (typeof self !== 'undefined') {
+            return self;
+        } else if (typeof window !== 'undefined') {
+            return window;
+        } else {
+            return this;
         }
     })();
 Global.Date = TestBenchDate;

@@ -1,0 +1,7 @@
+## 2025-02-24 - CSP Bypass Vulnerability using eval('this') and new Function('return this')
+
+**Vulnerability:** Global object retrieval logic used `eval('this')` and `new Function('return this')` across multiple files (`js_libraries/lynx-core/kernel-build/android-polyfill.js`, `js_libraries/lynx-promise/src/index.js`, `js_libraries/lynx-runtime-shared/src/nativeGlobal.ts`, `js_libraries/lynx-runtime-shared/src/ttConsole.ts`, `explorer/android/lynx_explorer/src/main/assets/testBench/testBench.js`). This triggers unsafe-eval crashes when Content Security Policy (CSP) is strictly enforced.
+
+**Learning:** When developing libraries that need to run in various JS runtimes, accessing the global object is a common requirement. In older JS standards, using `eval('this')` was a fallback to grab the global object. However, this pattern introduces severe security vulnerabilities in environments that enforce Content Security Policies (CSP) that restrict or ban `eval` and `new Function` due to the risk of Cross-Site Scripting (XSS) and code injection. Using such mechanisms triggers crashes and security violations unnecessarily.
+
+**Prevention:** Always use safe, standard feature detection methods to retrieve the global object. Check for `globalThis`, `self`, `window`, and `global` in that order, and finally fallback to `this` inside a function scope without using dynamic evaluation functions like `eval` or `new Function`.
