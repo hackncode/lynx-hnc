@@ -1,0 +1,4 @@
+## 2024-05-24 - [Fix CSP unsafe-eval risk in global resolution]
+**Vulnerability:** Found `eval('this')` and `new Function('return this')` being used to resolve the global object. This triggers Content Security Policy (CSP) `unsafe-eval` violations and acts as an injection risk in restrictive environments.
+**Learning:** Using `eval` or `new Function` for simply resolving `globalThis` is unnecessary and dangerous. This pattern existed because older JavaScript environments lacked `globalThis`, but a safer feature-detection cascade achieves the same without triggering `unsafe-eval`.
+**Prevention:** Always use a direct feature detection cascade (`globalThis`, `self`, `window`, `global`, `this`) when polyfilling or accessing the global object across unknown JavaScript environments to avoid CSP violations and execution risks.
