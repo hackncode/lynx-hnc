@@ -5,7 +5,7 @@
 var promiseFactor = require('./core');
 var es6 = require('./es6-extensions');
 var rejectionHandle = require('./rejection-tracking');
-var gg = new Function('return this')();
+var gg = typeof globalThis !== 'undefined' ? globalThis : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : this;
 // eslint-disable-next-line no-multi-assign
 gg.getPromise = module.exports.getPromise = (opt) => {
   var setTimeout = opt.setTimeout;
