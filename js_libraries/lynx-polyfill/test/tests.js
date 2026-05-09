@@ -5,7 +5,18 @@
 'use strict';
 /* eslint-disable */
 // eslint-disable-next-line no-new-func
-var GLOBAL = Function('return this')();
+var GLOBAL = (function() {
+  if (typeof globalThis !== 'undefined') return globalThis;
+  if (typeof self !== 'undefined') return self;
+  if (typeof window !== 'undefined') return window;
+  if (typeof global !== 'undefined') return global;
+  if (typeof this !== 'undefined' && this) return this;
+  try {
+    return new Function('return this')();
+  } catch (e) {
+    return {};
+  }
+})();
 // eslint-disable-next-line max-len
 var WHITESPACES =
   '\u0009\u000A\u000B\u000C\u000D\u0020\u00A0\u1680\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u202F\u205F\u3000\u2028\u2029\uFEFF';
