@@ -1,0 +1,4 @@
+## 2024-05-24 - Fix CSP Vulnerability in nativeGlobal.ts
+**Vulnerability:** The `nativeGlobal.ts` file used `(0, eval)('this')` to resolve the global object. This is a severe security issue as it executes arbitrary code in an environment lacking strict Content Security Policy (CSP), potentially leading to XSS vulnerabilities and execution of unsafe content.
+**Learning:** Indirect `eval` calls (`(0, eval)('...')`) are often mistakenly used as a "safe" alternative for global access, but they still fall under CSP `unsafe-eval` restrictions and present an attack vector if improperly exposed.
+**Prevention:** Use direct feature detection (`globalThis`, `self`, `window`, `global`, `this`) as the primary method to resolve the global object. Fallback to `new Function('return this')()` wrapped in a `try...catch` block only when absolutely necessary, returning a safe default object (`{}`) on failure to prevent crashes without executing arbitrary code.
