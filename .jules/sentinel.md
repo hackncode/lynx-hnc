@@ -1,0 +1,4 @@
+## 2026-05-12 - Prevent CSP 'unsafe-eval' crashes during global object resolution
+**Vulnerability:** Global object feature detection in polyfills and common code was using `(0, eval)('this')` or `Function('return this')()`, creating an unsafe dynamic evaluation that can crash under strict CSP environments (unsafe-eval).
+**Learning:** Using `eval` or `Function` dynamically purely to resolve `this` (the global object) is dangerous in security-restricted environments and breaks execution. It's often legacy 'security theater' unless wrapped carefully, and better global retrieval exists.
+**Prevention:** Prioritize direct feature detection (`globalThis`, `self`, `window`, `global`, `this`). If all fail, fallback to `Function('return this')()` wrapped in a `try/catch` block (returning `{}` on error) instead of leaving it unprotected or using `(0, eval)('this')`. Also, avoid naming variables `globalThis` locally to prevent shadowing bugs.
