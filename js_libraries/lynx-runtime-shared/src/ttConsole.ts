@@ -21,8 +21,18 @@ export function createSharedConsole(runtimeId?: string): SharedConsole {
 }
 
 const _global = (function () {
-  // eslint-disable-next-line no-eval
-  return this || (0, eval)('this');
+  if (typeof globalThis !== 'undefined') return globalThis;
+  if (typeof self !== 'undefined') return self;
+  if (typeof window !== 'undefined') return window;
+  // @ts-ignore
+  if (typeof global !== 'undefined') return global;
+  if (typeof this !== 'undefined') return this;
+  try {
+    // eslint-disable-next-line no-new-func
+    return Function('return this')();
+  } catch (e) {
+    return {};
+  }
 })();
 
 /**
