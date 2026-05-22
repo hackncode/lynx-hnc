@@ -1,0 +1,4 @@
+## 2024-05-22 - Fix CSP 'unsafe-eval' crash in global resolution
+**Vulnerability:** The codebase was using `eval('this')` and `new Function('return this;')()` to resolve the global object. This causes applications to crash in environments with strict Content Security Policies (CSP) that restrict 'unsafe-eval'.
+**Learning:** Using `eval` or `new Function` for global object resolution is risky in CSP-restricted environments. It can lead to application crashes.
+**Prevention:** Use direct feature detection (`globalThis`, `self`, `window`, `global`, `this`) first. If all fail, fallback to `Function('return this')()` wrapped in a `try/catch` block (returning `{}` on error) to prevent crashes. Always name the receiving variable something other than `globalThis` (e.g. `_globalThis`) in polyfills to avoid variable shadowing bugs during feature detection.
