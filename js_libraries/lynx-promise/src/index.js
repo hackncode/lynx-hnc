@@ -5,7 +5,18 @@
 var promiseFactor = require('./core');
 var es6 = require('./es6-extensions');
 var rejectionHandle = require('./rejection-tracking');
-var gg = new Function('return this')();
+var gg = (function() {
+  if (typeof globalThis !== 'undefined') return globalThis;
+  if (typeof self !== 'undefined') return self;
+  if (typeof window !== 'undefined') return window;
+  if (typeof global !== 'undefined') return global;
+  if (typeof this !== 'undefined') return this;
+  try {
+    return Function('return this')();
+  } catch (e) {
+    return {};
+  }
+})();
 // eslint-disable-next-line no-multi-assign
 gg.getPromise = module.exports.getPromise = (opt) => {
   var setTimeout = opt.setTimeout;
