@@ -1,0 +1,4 @@
+## 2024-05-01 - [CSP Eval Risk in Global Object Resolution]
+**Vulnerability:** The codebase resolved the global object using `new Function('return this')()` and `eval('this')` which triggers Content Security Policy (CSP) 'unsafe-eval' violations in strict environments, causing script execution to fail or crash.
+**Learning:** These fallback methods, while reliable across various JS engines, are flagged as security risks by strict CSPs. The vulnerability existed in polyfills and common code like `android-polyfill.js`, `nativeGlobal.ts`, and `lynx-promise`.
+**Prevention:** Global object resolution should prioritize direct feature detection of standard global objects (`globalThis`, `self`, `window`, `global`, `this`). The `new Function` fallback should only be used as a last resort within a `try/catch` block to handle exceptions safely, ensuring that standard property definitions don't result in application crashes.
