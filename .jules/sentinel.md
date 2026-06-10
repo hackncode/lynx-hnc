@@ -1,0 +1,4 @@
+## 2024-06-10 - Fix CSP unsafe-eval in global resolution
+**Vulnerability:** The codebase was resolving the global object by invoking `eval('this')` in `nativeGlobal.ts` and `ttConsole.ts`. This triggers Content Security Policy (CSP) `unsafe-eval` violations in secure environments, causing crashes or failures in the runtime.
+**Learning:** In environments with strict CSP rules, using `eval()` or `new Function()` without a try-catch block will throw an error and halt execution. The `js_libraries/lynx-runtime-shared` library failed to safely fallback.
+**Prevention:** Always use safe feature detection (`typeof globalThis !== 'undefined'`) to resolve the global object. If `new Function('return this')()` must be used as a last resort, it must be wrapped in a `try-catch` block returning `{}` to prevent uncaught exceptions from halting the execution environment.
