@@ -1,0 +1,4 @@
+## 2024-11-20 - [Weak Randomness in GUID Generation]
+**Vulnerability:** The `guid()` function in `js_libraries/lynx-runtime-shared/src/utils.ts` used `Math.random()`, which is not a cryptographically secure random number generator (CSPRNG), making the generated identifiers predictable.
+**Learning:** In environments without guaranteed access to a Node.js/Browser `crypto` module (like custom JS runtimes), code may fallback to `Math.random()`. However, we should prioritize `crypto.randomUUID()` and `crypto.getRandomValues()` if they are available in the environment to ensure cryptographic security.
+**Prevention:** Always prioritize using the platform's native CSPRNG (e.g., `crypto.randomUUID()` or `crypto.getRandomValues()`) through direct feature detection before falling back to insecure PRNGs like `Math.random()`.
