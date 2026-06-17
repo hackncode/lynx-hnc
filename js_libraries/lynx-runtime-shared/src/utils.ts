@@ -83,7 +83,36 @@ export class AppServiceSdkKnownError extends Error {
   }
 }
 
+let _uuidCache: Uint8Array | undefined;
+
 export function guid(): string {
+  // @ts-ignore
+  if (
+    typeof crypto !== 'undefined' &&
+    typeof crypto.randomUUID === 'function'
+  ) {
+    // @ts-ignore
+    return crypto.randomUUID();
+  }
+
+  // @ts-ignore
+  if (
+    typeof crypto !== 'undefined' &&
+    typeof crypto.getRandomValues === 'function'
+  ) {
+    if (!_uuidCache) {
+      _uuidCache = new Uint8Array(31);
+    }
+    // @ts-ignore
+    crypto.getRandomValues(_uuidCache);
+    let i = 0;
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (char) => {
+      // @ts-ignore
+      const rand = _uuidCache[i++] % 16;
+      return (char === 'x' ? rand : (3 & rand) | 8).toString(16);
+    });
+  }
+
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (char) => {
     const rand = (16 * Math.random()) | 0;
     return (char === 'x' ? rand : (3 & rand) | 8).toString(16);
