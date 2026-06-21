@@ -1,0 +1,4 @@
+## 2024-05-24 - Cryptographically Weak UUID Generation
+**Vulnerability:** The `guid()` utility in `js_libraries/lynx-runtime-shared/src/utils.ts` relied entirely on `Math.random()`, which is predictable and unsuitable for security-sensitive UUID v4 generation.
+**Learning:** In isomorphic environments like `lynx-runtime-shared` lacking explicit DOM/Node types, `crypto` must be accessed safely. We prioritize `crypto.randomUUID()` and fallback to `crypto.getRandomValues()` with an exact byte array size (31 bytes to match the UUID template length), using `typeof crypto !== 'undefined'` to avoid CSP eval risks.
+**Prevention:** Always use cryptographically secure pseudo-random number generators (CSPRNG) like `crypto` APIs for generating UUIDs, identifiers, or tokens, and use `// @ts-ignore` for ambient objects in typeless environments.
