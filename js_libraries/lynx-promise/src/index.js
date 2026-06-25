@@ -5,13 +5,29 @@
 var promiseFactor = require('./core');
 var es6 = require('./es6-extensions');
 var rejectionHandle = require('./rejection-tracking');
-var gg = new Function('return this')();
+// Security: Prioritize direct feature detection to prevent CSP 'unsafe-eval' crashes
+var gg = (function () {
+  if (typeof globalThis !== 'undefined') return globalThis;
+  if (typeof self !== 'undefined') return self;
+  if (typeof window !== 'undefined') return window;
+  if (typeof global !== 'undefined') return global;
+  if (typeof this !== 'undefined') return this;
+  try {
+    return Function('return this')();
+  } catch (e) {
+    return {};
+  }
+})();
 // eslint-disable-next-line no-multi-assign
 gg.getPromise = module.exports.getPromise = (opt) => {
   var setTimeout = opt.setTimeout;
   var onUnhandled = opt.onUnhandled;
   var clearTimeout = opt.clearTimeout;
-  var nextTick = opt.nextTick || (fn => { setTimeout(fn, 0); });
+  var nextTick =
+    opt.nextTick ||
+    ((fn) => {
+      setTimeout(fn, 0);
+    });
   var Promise = promiseFactor({ nextTick: nextTick });
   Promise = es6(Promise);
   Promise = rejectionHandle(Promise, setTimeout, clearTimeout).enable({

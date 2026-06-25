@@ -1,0 +1,4 @@
+## 2024-06-25 - [CSP Unsafe-Eval in Global Object Resolution]
+**Vulnerability:** Use of `eval('this')` or `new Function('return this')()` to resolve the global object causes crashes in environments with strict Content Security Policies (CSP) that forbid `unsafe-eval`.
+**Learning:** The codebase relied on eval/Function constructors for global object fallbacks, violating modern CSPs and creating an attack surface. Also, when polyfilling `globalThis`, the receiving variable must not be named `globalThis` to prevent variable shadowing during feature detection. Returning an empty object `{}` on fallback failure is necessary because it prevents modifying the real global scope.
+**Prevention:** Always use direct feature detection (`typeof globalThis !== 'undefined'`, `self`, `window`, `global`, `this`) before falling back to a `try/catch` wrapped `Function('return this')()`.
