@@ -1,0 +1,4 @@
+## 2024-05-18 - unsafe-eval CSP vulnerabilities in global object detection
+**Vulnerability:** The codebase uses `Function('return this')()` and `eval('this')` for global object detection, which can trigger Content Security Policy (CSP) 'unsafe-eval' violations and lead to application crashes or security exceptions in strict environments.
+**Learning:** Global object detection shouldn't rely solely on dynamic code execution since many modern platforms disable it for security reasons. Relying on it directly without feature detection creates a single point of failure in strict environments.
+**Prevention:** Use direct feature detection (`globalThis`, `self`, `window`, `global`, `this`) in priority order. Only use `Function('return this')()` wrapped in a `try/catch` as a last resort fallback, returning an empty object `{}` upon failure to prevent crashes while avoiding CSP violations.
