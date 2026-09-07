@@ -1,0 +1,4 @@
+## 2024-09-07 - Fix CSP Unsafe-Eval in Global Resolution
+**Vulnerability:** Global object resolution was being performed using `eval('this')` and `new Function('return this')()` in multiple files (e.g., `nativeGlobal.ts`, `ttConsole.ts`, `android-polyfill.js`, `lynx-promise`).
+**Learning:** These unsafe-eval calls violate Content Security Policy (CSP) and present a critical code execution risk if user input can ever manipulate the evaluated scope. The fallback mechanism for environments lacking standard globals must avoid raw strings.
+**Prevention:** Always use direct feature detection (`globalThis`, `self`, `window`, `global`, `this`) in an IIFE. If a fallback is necessary, wrap `new Function('return this')()` in a `try/catch` that returns `{}` so strict CSP contexts don't crash, but never use `eval('this')`. Also, ensure variable names like `globalThis` aren't shadowed during detection.
