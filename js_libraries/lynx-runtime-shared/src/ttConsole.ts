@@ -20,9 +20,18 @@ export function createSharedConsole(runtimeId?: string): SharedConsole {
   return nativeConsole as SharedConsole;
 }
 
-const _global = (function () {
-  // eslint-disable-next-line no-eval
-  return this || (0, eval)('this');
+const _global = (function (): any {
+  if (typeof globalThis !== 'undefined') return globalThis;
+  if (typeof self !== 'undefined') return self;
+  if (typeof window !== 'undefined') return window;
+  // @ts-ignore
+  if (typeof global !== 'undefined') return global;
+  if (typeof this !== 'undefined') return this;
+  try {
+    return Function('return this')();
+  } catch (e) {
+    return {};
+  }
 })();
 
 /**
