@@ -1,0 +1,4 @@
+## 2024-05-15 - Unsafe 'eval' Equivalent Discovered in Polyfill
+**Vulnerability:** A polyfill (@lynx-js/ios-polyfill-promise) used `new Function('return this')()` to get a reference to the global object. This approach bypasses Content Security Policy (CSP) when `unsafe-eval` is not permitted, posing a risk of crash or exploitation if the environment doesn't allow eval-like functions.
+**Learning:** Using `new Function('return this')()` is fundamentally an `eval()` variant and triggers CSP `unsafe-eval` errors. This is frequently done to safely resolve the global object (`window`, `global`, `self`, etc.) in universal scripts. However, it violates security constraints.
+**Prevention:** Avoid `new Function` and `eval`. Instead, prioritize direct detection of global properties (`globalThis`, `self`, `window`, `global`, `this`). If direct checks are insufficient, use a try-catch wrapped check that doesn't rely on string evaluation.
